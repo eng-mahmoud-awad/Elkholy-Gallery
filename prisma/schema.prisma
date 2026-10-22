@@ -32,8 +32,8 @@ model Product {
   isActive    Boolean  @default(true)
   order       Int      @default(0)
   createdAt   DateTime @default(now())
-
-  category   Category @relation(fields: [categoryId], references: [id])
+  image       String?   // صورة رئيسية للمنتج (للاستخدام في الصفحة الرئيسية)
+  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   categoryId String   @db.ObjectId
 
   @@index([categoryId])

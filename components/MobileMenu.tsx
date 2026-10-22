@@ -47,13 +47,13 @@ export default function MobileMenu({ categoryNames }: { categoryNames: string[] 
       <div
         id="drawer"
         onClick={() => setMenuOpen(false)}
-        className={`fixed inset-0 z-[25] bg-[rgba(20,16,12,0.5)] transition-all duration-250 ${
+        className={`fixed inset-0  z-[100] bg-[rgba(20,16,12,0.5)] transition-all duration-250 ${
           menuOpen ? "visible opacity-100" : "invisible opacity-0"
         }`}
       >
         <nav
           onClick={(e) => e.stopPropagation()}
-          className={`absolute top-0 right-0 bottom-0 flex w-[min(80%,320px)] flex-col bg-white px-6 pt-[calc(84px+env(safe-area-inset-top,0px))] pb-6 transition-transform duration-300 ${
+          className={`absolute top-0 right-0 min-h-screen bottom-0 flex w-[min(80%,320px)] flex-col bg-white px-6 pt-[calc(84px+env(safe-area-inset-top,0px))] pb-6 transition-transform duration-300 ${
             menuOpen ? "translate-x-0" : "translate-x-full"
           }`}
         >

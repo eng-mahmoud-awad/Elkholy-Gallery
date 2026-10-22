@@ -1,7 +1,11 @@
 export const WA = "201205635310"; 
 
 export type Kind = "bed" | "dining" | "sofa" | "kids";
+export const HERO_IMAGES: string[] = [  "/hero/1.jpg",
+  "/hero/2.jpg",
+  "/hero/3.jpg",];
 
+  export type CatalogCategory = { id: string; name: string };
 export type Product = {
   id: string;
   category: string;
@@ -11,6 +15,7 @@ export type Product = {
   color: string;
   description: string;
   image: string;
+  images?: string[];
 };
 
 export type Category = {

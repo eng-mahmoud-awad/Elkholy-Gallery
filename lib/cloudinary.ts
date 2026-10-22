@@ -7,40 +7,32 @@ cloudinary.config({
   secure: true,
 });
 
-export const UPLOAD_FOLDER = "al-asmar";
+export { cloudinary };
 
-export type UploadSignature = {
-  signature: string;
-  timestamp: number;
-  folder: string;
-  apiKey: string | undefined;
-  cloudName: string | undefined;
-};
+/** فولدر الصور على Cloudinary */
+export const UPLOAD_FOLDER = "furniture";
 
-// Signed upload: the browser uploads straight to Cloudinary using this
-// signature, so image bytes never pass through our server (Vercel has a
-// ~4.5MB request body limit that multi-photo uploads would hit quickly).
-export function createUploadSignature(): UploadSignature {
-  const timestamp = Math.round(Date.now() / 1000);
-  const signature = cloudinary.utils.api_sign_request(
-    { timestamp, folder: UPLOAD_FOLDER },
-    process.env.CLOUDINARY_API_SECRET as string
+/** حذف صورة من Cloudinary (هنستخدمها في الداشبورد عند حذف منتج أو صورة) */
+export async function deleteImage(publicId: string) {
+  await cloudinary.uploader.destroy(publicId);
+}
+
+type ImageRef =
+  | string
+  | { publicId?: string | null; public_id?: string | null };
+
+export async function destroyImages(images?: ImageRef[] | null) {
+  const ids = (images ?? [])
+    .map((img) =>
+      typeof img === "string" ? img : img?.publicId ?? img?.public_id
+    )
+    .filter((id): id is string => Boolean(id));
+
+  await Promise.all(
+    ids.map((id) =>
+      cloudinary.uploader.destroy(id).catch((error) => {
+        console.error("Error deleting from Cloudinary:", id, error);
+      })
+    )
   );
-  return {
-    signature,
-    timestamp,
-    folder: UPLOAD_FOLDER,
-    apiKey: process.env.CLOUDINARY_API_KEY,
-    cloudName: process.env.CLOUDINARY_CLOUD_NAME,
-  };
 }
-
-// Best-effort cleanup: a failed delete must never block the DB operation,
-// so we use allSettled and ignore individual failures.
-export async function destroyImages(publicIds: (string | null | undefined)[] = []) {
-  const ids = publicIds.filter((id): id is string => Boolean(id));
-  if (!ids.length) return;
-  await Promise.allSettled(ids.map((id) => cloudinary.uploader.destroy(id)));
-}
-
-export default cloudinary;

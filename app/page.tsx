@@ -1,15 +1,22 @@
 import Image from "next/image";
 import CatalogClient from "../components/CatalogClient";
-import { BG_PATTERN, WA } from "../lib/data";
+import HeroSlideshow from "../components/HeroSlideshow";
+import { BG_PATTERN, HERO_IMAGES, WA } from "../lib/data";
 import { getCatalog } from "../lib/catalog";
 import { featureIcon, WhatsAppIcon } from "../components/Icons";
 import MobileMenu from "../components/MobileMenu";
 export const revalidate = 3600;
 
-/* ---------- الصفحة الرئيسية (Server Component) ---------- */
 export default async function Home() {
   const { categories, products } = await getCatalog();
   const categoryNames = categories.map((c) => c.name);
+
+  const heroImages =
+    HERO_IMAGES.length > 0
+      ? HERO_IMAGES
+      : categories
+          .map((c) => products.find((p) => p.category === c.name)?.image)
+          .filter((src): src is string => Boolean(src));
 
   return (
     <div
@@ -17,7 +24,7 @@ export default async function Home() {
       style={{ backgroundImage: BG_PATTERN }}
       className="min-h-screen bg-[#FBF4EE] text-[17px] leading-[1.8] text-[#3B2A25] [font-family:var(--font-plex),Tahoma,Arial,sans-serif] pt-[env(safe-area-inset-top,0px)] pb-[env(safe-area-inset-bottom,0px)] before:fixed before:inset-x-0 before:top-0 before:z-30 before:h-[env(safe-area-inset-top,0px)] before:bg-white before:content-[''] [&_*:focus-visible]:outline [&_*:focus-visible]:outline-[3px] [&_*:focus-visible]:outline-offset-2 [&_*:focus-visible]:outline-[#E8795A] motion-reduce:[&_*]:!transition-none motion-reduce:[&_*]:!scroll-auto"
     >
-      <header className="sticky  top-[env(safe-area-inset-top,0px)] text-white z-20 border-b border-[#F0DDD1] bg-black">
+<header className="sticky top-[env(safe-area-inset-top,0px)] z-20 border-b border-[#F0DDD1] bg-[#FFF7F0] text-[#3B2A25] shadow-[0_2px_12px_rgba(200,83,47,0.08)] backdrop-blur">
         <div className="mx-auto flex h-[70px] max-w-[1180px] items-center justify-between px-5 min-[860px]:h-[70px]">
           <a href="#top" aria-label="الرئيسية" className="flex items-center">
             <Image
@@ -51,34 +58,36 @@ export default async function Home() {
       </header>
 
       <main id="top" className="scroll-mt-[calc(100px+env(safe-area-inset-top,0px))]">
-        <section className="mx-auto max-w-[1180px] px-5 pt-8 pb-12 text-center">
-          <div className="mx-auto mb-6 w-fit rounded-3xl  ">
-            <Image
-              src="/logo.png"
-              alt="معرض الأثاث"
-              width={479}
-              height={281}
-              priority
-              className="block h-auto w-[min(320px,70vw)]"
-            />
+        <section className="relative isolate overflow-hidden">
+          <HeroSlideshow images={heroImages} />
+          <div className="mx-auto flex min-h-[78vh] max-w-[1180px] flex-col items-center justify-center px-5 pt-10 pb-16 text-center">
+            <div className="mx-auto mb-3 w-fit  px-5 py-2  ">
+              <Image
+                src="/logo.png"
+                alt="معرض الأثاث"
+                width={479}
+                height={281}
+                priority
+                className="block h-auto w-[min(300px,65vw)]"
+              />
+            </div>
+            <h1 className="text-[clamp(34px,7vw,56px)] mt-0 font-extrabold leading-[1.3] text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.45)]">
+الخولي للاثاث            </h1>
+            <p className="mx-auto mt-3.5 mb-7 max-w-[34em] text-[19px] text-white/90 drop-shadow-[0_1px_6px_rgba(0,0,0,0.5)]">
+              أثاث بخامات متينة وتصميمات هادية، لكل أوضة في بيتك. تعالى شوف المعروض أو ابعتلنا على واتساب.
+            </p>
+            <a
+              href="#cat-0"
+              className="inline-flex items-center gap-2 rounded-[10px] border-0 bg-[#C8532F] px-7 py-3 font-semibold text-white transition hover:brightness-110"
+            >
+              تصفح المنتجات
+            </a>
           </div>
-          <h1 className="text-[clamp(34px,7vw,56px)] font-extrabold leading-[1.3] text-[#C8532F]">
-            معرض الأثاث
-          </h1>
-          <p className="mx-auto mt-3.5 mb-7 max-w-[34em] text-[19px] text-[#7A6A63]">
-            أثاث بخامات متينة وتصميمات هادية، لكل أوضة في بيتك. تعالى شوف المعروض أو ابعتلنا على واتساب.
-          </p>
-          <a
-            href="#cat-0"
-            className="inline-flex items-center gap-2 rounded-[10px] border-0 bg-[#C8532F] px-7 py-3 font-semibold text-white transition hover:brightness-110"
-          >
-            تصفح المنتجات
-          </a>
         </section>
 
         <section
           id="about"
-          className="mx-auto max-w-[1180px] px-5 scroll-mt-[calc(100px+env(safe-area-inset-top,0px))]"
+          className="mx-auto mt-12 max-w-[1180px] px-5 scroll-mt-[calc(100px+env(safe-area-inset-top,0px))]"
         >
           <div className="mb-14 rounded-2xl border border-[#F0DDD1] bg-white px-6 py-8 min-[760px]:p-10">
             <h2 className="text-[26px] font-bold text-[#C8532F]">عن المعرض</h2>
@@ -130,20 +139,20 @@ export default async function Home() {
       <footer className="mt-5 bg-[#7A2A2A] pt-9 pb-11 text-white">
         <div className="mx-auto grid max-w-[1180px] gap-[18px] px-5 min-[760px]:grid-cols-[1.4fr_1fr_1fr]">
           <div>
-            <b className="text-[20px]">معرض الأثاث</b>
-            <p className="opacity-85">معرض ومصنع أثاث منزلي.</p>
+            <b className="text-[20px]">معرض الخولي</b>
+            <p className="opacity-85">معرض أثاث منزلي.</p>
           </div>
           <div>
             <b className="text-[20px]">تواصل معنا</b>
             <p className="opacity-85">
-              الهاتف: 0100 000 0000
+              الهاتف:  +20 12 05635310
               <br />
-              الأحد – الخميس: 10 صباحًا – 9 مساءً
+              السبت – الخميس: 10 صباحًا – 9 مساءً
             </p>
           </div>
           <div>
             <b className="text-[20px]">العنوان</b>
-            <p className="opacity-85">اكتب عنوان المعرض هنا</p>
+            <p className="opacity-85">دمياط - الشعراء</p>
           </div>
         </div>
       </footer>
